@@ -29,15 +29,21 @@ class ColorPaletteAdapter extends BaseAdapter {
 
   /*package*/ final OnColorSelectedListener listener;
   /*package*/ final int[] colors;
+  /*package*/ final int borderColor;
+  /*package*/ final boolean borderBlended;
   /*package*/ int selectedPosition;
   /*package*/ int colorShape;
 
   ColorPaletteAdapter(OnColorSelectedListener listener,
                       int[] colors,
+                      int borderColor,
+                      boolean borderBlended,
                       int selectedPosition,
                       @ColorShape int colorShape) {
     this.listener = listener;
     this.colors = colors;
+    this.borderColor = borderColor;
+    this.borderBlended = borderBlended;
     this.selectedPosition = selectedPosition;
     this.colorShape = colorShape;
   }
@@ -74,6 +80,7 @@ class ColorPaletteAdapter extends BaseAdapter {
   interface OnColorSelectedListener {
 
     void onColorSelected(int color);
+    void onColorLongPressed(int color);
   }
 
   private final class ViewHolder {
@@ -111,6 +118,8 @@ class ColorPaletteAdapter extends BaseAdapter {
           imageView.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
         }
       } else {
+        colorPanelView.setBorderColor(borderColor);
+        colorPanelView.setBorderBlended(borderBlended);
         setColorFilter(position);
       }
       setOnClickListener(position);
@@ -128,7 +137,7 @@ class ColorPaletteAdapter extends BaseAdapter {
       });
       colorPanelView.setOnLongClickListener(new View.OnLongClickListener() {
         @Override public boolean onLongClick(View v) {
-          colorPanelView.showHint();
+          listener.onColorLongPressed(colors[position]);
           return true;
         }
       });

@@ -29,6 +29,7 @@ import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
 
 public class MainActivity extends AppCompatActivity implements ColorPickerDialogListener {
+  private int selectedColor = 0xfffafafa;
 
   // Give your color picker dialog unique IDs if you have multiple dialogs.
   private static final int DIALOG_ID = 0;
@@ -48,15 +49,40 @@ public class MainActivity extends AppCompatActivity implements ColorPickerDialog
   }
 
   @Override public boolean onOptionsItemSelected(MenuItem item) {
+    int presets[] = {
+            0xfffafafa,
+            0xfffea3aa,
+            0xfff8b88b,
+            0xfffaf884,
+
+            0xff82b1ff,
+            0xff80d8ff,
+            0xffa7ffeb,
+            0xffbaed91,
+
+            0xffb388ff,
+            0xfff8bbd0,
+            0xffd7ccc8,
+            0xffcfd8dc
+    };
     switch (item.getItemId()) {
       case R.id.menu_color_picker_dialog:
-        ColorPickerDialog.newBuilder()
-            .setDialogType(ColorPickerDialog.TYPE_CUSTOM)
-            .setAllowPresets(false)
+        ColorPickerDialog.Builder builder = ColorPickerDialog.newBuilder()
+            .setDialogType(ColorPickerDialog.TYPE_PRESETS)
             .setDialogId(DIALOG_ID)
-            .setColor(Color.BLACK)
-            .setShowAlphaSlider(true)
-            .show(this);
+            .setPresets(presets)
+            .setShowAlphaSlider(false)
+            .setAllowPresets(false)
+            .setAllowCustom(false)
+            .setShowAlphaSlider(false)
+            .setShowColorShades(false)
+            .setColor(selectedColor)
+            .setBorderColor(0x7f7f7f7f)
+            .setBorderBlended(true)
+            .setOneTouchSelect(true);
+
+        builder.show(this);
+
         return true;
       case R.id.menu_github:
         try {
@@ -73,9 +99,15 @@ public class MainActivity extends AppCompatActivity implements ColorPickerDialog
     switch (dialogId) {
       case DIALOG_ID:
         // We got result from the dialog that is shown when clicking on the icon in the action bar.
-        Toast.makeText(MainActivity.this, "Selected Color: #" + Integer.toHexString(color), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this, "Selected Color: #" + Integer.toHexString(color), Toast.LENGTH_SHORT).show();
+        selectedColor = color;
         break;
     }
+  }
+
+  @Override
+  public void onColorLongPressed(int dialogId, int color) {
+    Toast.makeText(MainActivity.this, "Selected Color: #" + Integer.toHexString(color), Toast.LENGTH_SHORT).show();
   }
 
   @Override public void onDialogDismissed(int dialogId) {

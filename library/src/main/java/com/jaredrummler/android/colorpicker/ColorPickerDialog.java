@@ -71,6 +71,9 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
   private static final String ARG_COLOR = "color";
   private static final String ARG_ALPHA = "alpha";
   private static final String ARG_PRESETS = "presets";
+  private static final String ARG_BORDER_COLOR = "borderColor";
+  private static final String ARG_BORDER_BLENDED = "borderBlended";
+  private static final String ARG_ONE_TOUCH_SELECT = "oneTouchSelect";
   private static final String ARG_ALLOW_PRESETS = "allowPresets";
   private static final String ARG_ALLOW_CUSTOM = "allowCustom";
   private static final String ARG_DIALOG_TITLE = "dialogTitle";
@@ -175,13 +178,19 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
       selectedButtonStringRes = R.string.cpv_select;
     }
 
+    final boolean oneTouchSelect = getArguments().getBoolean(ARG_ONE_TOUCH_SELECT);
+
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-        .setView(rootView)
-        .setPositiveButton(selectedButtonStringRes, new DialogInterface.OnClickListener() {
-          @Override public void onClick(DialogInterface dialog, int which) {
-            colorPickerDialogListener.onColorSelected(dialogId, color);
-          }
-        });
+        .setView(rootView);
+
+    if (!oneTouchSelect) {
+      builder.setPositiveButton(selectedButtonStringRes, new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          colorPickerDialogListener.onColorSelected(dialogId, color);
+        }
+      });
+    }
 
     int dialogTitleStringRes = getArguments().getInt(ARG_DIALOG_TITLE);
     if (dialogTitleStringRes != 0) {
@@ -445,10 +454,18 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
       contentView.findViewById(R.id.shades_divider).setVisibility(View.GONE);
     }
 
+    final Bundle arguments = getArguments();
+
+    final boolean oneTouchSelect = arguments.getBoolean(ARG_ONE_TOUCH_SELECT);
+    
     adapter = new ColorPaletteAdapter(new ColorPaletteAdapter.OnColorSelectedListener() {
       @Override public void onColorSelected(int newColor) {
-        if (color == newColor) {
-          colorPickerDialogListener.onColorSelected(dialogId, color);
+        if (oneTouchSelect) {
+          colorPickerDialogListener.onColorSelected(dialogId, newColor);
+          dismiss();
+          return;
+        } else if (color == newColor) {
+          colorPickerDialogListener.onColorSelected(dialogId, newColor);
           dismiss();
           return;
         }
@@ -457,7 +474,16 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
           createColorShades(color);
         }
       }
-    }, presets, getSelectedItemPosition(), colorShape);
+
+      @Override public void onColorLongPressed(int newColor) {
+        colorPickerDialogListener.onColorLongPressed(dialogId, newColor);
+      }
+    },
+    presets,
+    arguments.getInt(ARG_BORDER_COLOR),
+    arguments.getBoolean(ARG_BORDER_BLENDED),
+    getSelectedItemPosition(),
+    colorShape);
 
     gridView.setAdapter(adapter);
 
@@ -722,6 +748,9 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
     @StringRes int selectedButtonText = R.string.cpv_select;
     @DialogType int dialogType = TYPE_PRESETS;
     int[] presets = MATERIAL_COLORS;
+    int borderColor = 0x7f7f7f7f;
+    boolean borderBlended = true;
+    boolean oneTouchSelect = true;
     @ColorInt int color = Color.BLACK;
     int dialogId = 0;
     boolean showAlphaSlider = false;
@@ -806,6 +835,21 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
       return this;
     }
 
+    public Builder setBorderColor(int borderColor) {
+      this.borderColor = borderColor;
+      return this;
+    }
+
+    public Builder setBorderBlended(boolean borderBlended) {
+      this.borderBlended = borderBlended;
+      return this;
+    }
+
+    public Builder setOneTouchSelect(boolean oneTouchSelect) {
+      this.oneTouchSelect = oneTouchSelect;
+      return this;
+    }
+    
     /**
      * Set the original color
      *
@@ -903,6 +947,9 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
       args.putInt(ARG_TYPE, dialogType);
       args.putInt(ARG_COLOR, color);
       args.putIntArray(ARG_PRESETS, presets);
+      args.putInt(ARG_BORDER_COLOR, borderColor);
+      args.putBoolean(ARG_BORDER_BLENDED, borderBlended);
+      args.putBoolean(ARG_ONE_TOUCH_SELECT, oneTouchSelect);
       args.putBoolean(ARG_ALPHA, showAlphaSlider);
       args.putBoolean(ARG_ALLOW_CUSTOM, allowCustom);
       args.putBoolean(ARG_ALLOW_PRESETS, allowPresets);

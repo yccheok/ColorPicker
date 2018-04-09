@@ -33,6 +33,8 @@ public interface ColorPickerDialogListener {
    */
   void onColorSelected(int dialogId, @ColorInt int color);
 
+  void onColorLongPressed(int dialogId, @ColorInt int color);
+
   /**
    * Callback that is invoked when the color picker dialog was dismissed.
    *

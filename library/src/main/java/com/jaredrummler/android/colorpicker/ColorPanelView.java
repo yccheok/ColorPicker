@@ -61,6 +61,7 @@ public class ColorPanelView extends View {
   /* The width in pixels of the border surrounding the color panel. */
   private int borderWidthPx;
   private int borderColor = DEFAULT_BORDER_COLOR;
+  private boolean borderBlended;
   private int color = Color.BLACK;
   private int shape;
 
@@ -141,6 +142,13 @@ public class ColorPanelView extends View {
     } else if (shape == ColorShape.CIRCLE) {
       final int outerRadius = getMeasuredWidth() / 2;
       if (borderWidthPx > 0) {
+        if (this.borderBlended) {
+            canvas.drawCircle(getMeasuredWidth() / 2,
+                    getMeasuredHeight() / 2,
+                    outerRadius - borderWidthPx/2.0f,
+                    colorPaint);
+        }
+        
         canvas.drawCircle(getMeasuredWidth() / 2,
             getMeasuredHeight() / 2,
             outerRadius,
@@ -258,6 +266,11 @@ public class ColorPanelView extends View {
     invalidate();
   }
 
+  public void setBorderBlended(boolean borderBlended) {
+    this.borderBlended = borderBlended;
+    invalidate();
+  }
+  
   /**
    * @return the color of the border surrounding the panel.
    */
