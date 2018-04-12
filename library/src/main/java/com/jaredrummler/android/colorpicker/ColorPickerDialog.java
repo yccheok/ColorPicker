@@ -18,7 +18,6 @@ package com.jaredrummler.android.colorpicker;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
@@ -29,8 +28,12 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -461,7 +464,15 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
     adapter = new ColorPaletteAdapter(new ColorPaletteAdapter.OnColorSelectedListener() {
       @Override public void onColorSelected(int newColor) {
         if (oneTouchSelect) {
-          colorPickerDialogListener.onColorSelected(dialogId, newColor);
+          Fragment targetFragment = getTargetFragment();
+          if (targetFragment instanceof ColorPickerDialogListener) {
+            ((ColorPickerDialogListener)targetFragment).onColorSelected(dialogId, newColor);
+          }
+
+          if (colorPickerDialogListener != null) {
+            colorPickerDialogListener.onColorSelected(dialogId, newColor);
+          }
+
           dismiss();
           return;
         } else if (color == newColor) {
@@ -969,10 +980,15 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
      * @param activity
      *     The current activity.
      */
-    public void show(Activity activity) {
-      create().show(activity.getFragmentManager(), "color-picker-dialog");
+    public void show(AppCompatActivity activity) {
+      create().show(activity.getSupportFragmentManager(), "color-picker-dialog");
     }
 
+    public void show(Fragment targetFragment, FragmentManager fragmentManager, String TAG) {
+      DialogFragment dialogFragment = create();
+      dialogFragment.setTargetFragment(targetFragment, 0);
+      create().show(fragmentManager, TAG);
+    }
   }
 
   @IntDef({TYPE_CUSTOM, TYPE_PRESETS})

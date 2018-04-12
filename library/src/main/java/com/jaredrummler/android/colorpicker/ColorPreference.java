@@ -23,6 +23,8 @@ import android.graphics.Color;
 import android.preference.Preference;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -105,8 +107,8 @@ public class ColorPreference extends Preference implements ColorPickerDialogList
           .setColor(color)
           .create();
       dialog.setColorPickerDialogListener(ColorPreference.this);
-      Activity activity = (Activity) getContext();
-      dialog.show(activity.getFragmentManager(), getFragmentTag());
+      AppCompatActivity activity = (AppCompatActivity) getContext();
+      dialog.show(activity.getSupportFragmentManager(), getFragmentTag());
     }
   }
 
@@ -114,9 +116,9 @@ public class ColorPreference extends Preference implements ColorPickerDialogList
     super.onAttachedToActivity();
 
     if (showDialog) {
-      Activity activity = (Activity) getContext();
+      AppCompatActivity activity = (AppCompatActivity) getContext();
       ColorPickerDialog fragment =
-          (ColorPickerDialog) activity.getFragmentManager().findFragmentByTag(getFragmentTag());
+          (ColorPickerDialog) activity.getSupportFragmentManager().findFragmentByTag(getFragmentTag());
       if (fragment != null) {
         // re-bind preference to fragment
         fragment.setColorPickerDialogListener(this);
