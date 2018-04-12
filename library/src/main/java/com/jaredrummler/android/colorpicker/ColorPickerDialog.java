@@ -487,7 +487,14 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
       }
 
       @Override public void onColorLongPressed(int newColor) {
-        colorPickerDialogListener.onColorLongPressed(dialogId, newColor);
+        Fragment targetFragment = getTargetFragment();
+        if (targetFragment instanceof ColorPickerDialogListener) {
+          ((ColorPickerDialogListener)targetFragment).onColorLongPressed(dialogId, newColor);
+        }
+
+        if (colorPickerDialogListener != null) {
+          colorPickerDialogListener.onColorLongPressed(dialogId, newColor);
+        }
       }
     },
     presets,
