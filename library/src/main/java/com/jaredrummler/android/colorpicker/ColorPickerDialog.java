@@ -260,8 +260,6 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
     
     Fragment targetFragment = getTargetFragment();
 
-    android.util.Log.i("CHEOK", "targetFragment = " + targetFragment);
-    
     if (targetFragment instanceof ColorPickerDialogListener) {
       ((ColorPickerDialogListener)targetFragment).onDialogDismissed(dialogId);
     }
@@ -1005,7 +1003,7 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
     public void show(Fragment targetFragment, FragmentManager fragmentManager, String TAG) {
       DialogFragment dialogFragment = create();
       dialogFragment.setTargetFragment(targetFragment, 0);
-      create().show(fragmentManager, TAG);
+      dialogFragment.show(fragmentManager, TAG);
     }
   }
 
