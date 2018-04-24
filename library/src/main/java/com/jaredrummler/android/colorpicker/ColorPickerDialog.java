@@ -540,7 +540,9 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
         presets[i] = Color.argb(alpha, red, green, blue);
       }
     }
-    presets = unshiftIfNotExists(presets, color);
+    if (color != Color.TRANSPARENT) {
+      presets = unshiftIfNotExists(presets, color);
+    }
     if (isMaterialColors && presets.length == 19) {
       // Add black to have a total of 20 colors if the current color is in the material color palette
       presets = pushIfNotExists(presets, Color.argb(alpha, 0, 0, 0));
@@ -778,7 +780,7 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
     int borderColor = 0x7f7f7f7f;
     boolean borderBlended = true;
     boolean oneTouchSelect = true;
-    @ColorInt int color = Color.BLACK;
+    @ColorInt int color = Color.TRANSPARENT;
     int dialogId = 0;
     boolean showAlphaSlider = false;
     boolean allowPresets = true;
