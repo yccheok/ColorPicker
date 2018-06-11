@@ -225,12 +225,6 @@ public class ColorPickerDialog extends DialogFragment implements OnTouchListener
     super.onStart();
     AlertDialog dialog = (AlertDialog) getDialog();
 
-    // http://stackoverflow.com/a/16972670/1048340
-    //noinspection ConstantConditions
-    dialog.getWindow()
-        .clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-
     // Do not dismiss the dialog when clicking the neutral button.
     Button neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
     if (neutralButton != null) {
